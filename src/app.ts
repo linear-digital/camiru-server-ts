@@ -37,7 +37,7 @@ db.once('open', function () {
 
 // Static media folder
 app.use('/media',
-    express.static(path.join(__dirname, 'media')));
+    express.static(path.join(__dirname, '../media')));
 
 
 // 
