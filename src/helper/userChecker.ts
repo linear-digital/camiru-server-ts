@@ -23,9 +23,9 @@ const centerChecker = async (req: Request, res: Response, next: NextFunction) =>
             res.status(401).send({ message: 'Unauthorized 2' });
         }
 
-        const id = decrypt({
-            data: data.id
-        });
+        const id = decrypt(
+            data.id
+        );
         const user = await Center.findById(id) as CenterType;
         if (!user) {
             res.status(404).send({ message: 'User not found' });

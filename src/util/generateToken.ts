@@ -16,12 +16,10 @@ import { encrypt } from './security'
 
 const generateCenterToken = async (user: any, time: string, sessionId: string) => {
     const secret = process.env.JWT_SECRET as string
-    console.log(secret);
     const id = encrypt(user._id)
     const session = encrypt(sessionId)
     const token = await jwt.sign({
-        id: id,
-        session
+        id: id
     }, secret, {
         expiresIn: time
     })

@@ -32,9 +32,9 @@ const login = async (body: { email: string, password: string }) => {
         if (data) {
             const isMatch = await bcrypt.compare(body.password, data.password)
             if (isMatch) {
-                const session = await tokenGenerator.generateCenterToken(data, "30d", "center")
+                // const session = await tokenGenerator.generateCenterToken(data, "30d", "center")
 
-                const accessToken = await tokenGenerator.generateCenterToken(data, "1h", session)
+                const accessToken = await tokenGenerator.generateCenterToken(data, "30d", "session")
 
                 return { message: "login success", accessToken }
             } else {
