@@ -1,5 +1,5 @@
 import { Query } from "../../type/common";
-import Student, { IStudent } from "./student.model";
+import Student, { IStudent } from "./staff.model";
 import bcrypt from 'bcrypt'
 const defaultValue = {
     limit: 20,
@@ -8,12 +8,6 @@ const defaultValue = {
 
 const createNew = async (user: IStudent): Promise<IStudent> => {
     try {
-        user.birthDate = new Date(user.birthDate)
-        user.enrollmentDate = new Date(user.enrollmentDate)
-        // generate 15 digit id
-        const date = new Date()
-        const studentId = date.getTime()
-        user.studentId = studentId
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash('123456', salt)
         user.password = hashedPassword
@@ -182,9 +176,9 @@ const getStudentByClass = async (query: any): Promise<any> => {
 const getSingle = async (id: string): Promise<IStudent> => {
     try {
         const data = await Student.findById(id)
-        .populate("center", "firstName lastName email phone")
-        .populate("classRoom")
-        .exec();
+            .populate("center", "firstName lastName email phone")
+            .populate("classRoom")
+            .exec();
         if (!data) {
             throw new Error("User not found")
         }
@@ -213,7 +207,7 @@ const deleteStudent = async (id: string) => {
             throw new Error("User not found")
         }
         return {
-            message : "Student deleted successfully"
+            message: "Student deleted successfully"
         }
     } catch (error: any) {
         throw new Error(error)

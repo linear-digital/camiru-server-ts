@@ -33,6 +33,26 @@ const uploadProfile = async (req: Request, res: Response, next: NextFunction): P
         next(error)
     }
 }
+const uploadDocuement = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+        if (!req.file) {
+            return res.status(400).json();
+        }
+        const file = req.file;
+
+        const newFile = new Upload({
+            file: { ...file, path: path.join("media/profile/", file.originalname) },
+            type: "profile"
+        })
+
+        const result = await newFile.save();
+
+        res.status(200).json(encrypt(result));
+
+    } catch (error: any) {
+        next(error)
+    }
+}
 
 const getAllProfile = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const page: any = req.query.page || 1
@@ -96,6 +116,7 @@ const uploadController = {
     uploadProfile,
     getAllProfile,
     deleteAllProfile,
-    deleteSingle
+    deleteSingle,
+    uploadDocuement
 }
 export default uploadController
