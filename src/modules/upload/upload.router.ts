@@ -10,7 +10,7 @@ const router = Router();
 router.post('/profile', centerChecker, multerConfig.profile.single('image'), uploadController.uploadProfile);
 
 // Upload Document
-router.post('/document', centerChecker, multerConfig.profile.single('document'), uploadController.uploadDocuement);
+router.post('/document', centerChecker, multerConfig.document.single('document'), uploadController.uploadDocuement);
 
 // get all
 router.get('/profile', centerChecker, uploadController.getAllProfile);

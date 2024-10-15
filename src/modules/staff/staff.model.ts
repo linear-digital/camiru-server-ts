@@ -1,33 +1,6 @@
-import { stat } from "fs";
-import mongoose from "mongoose";
-import { start } from "repl";
 
-const contactSchema = new mongoose.Schema({
-    firstName: {
-        type: String,
-        required: [true, "Guardian FirstName is required"],
-    },
-    lastName: {
-        type: String,
-        required: [true, "Guardian LastName is required"],
-    },
-    email: {
-        type: String,
-        required: [true, "Email is required"],
-        match: [/.+@.+\..+/, "Please enter a valid email address"],
-    },
-    home: {
-        type: String,
-        required: [true, "Number is required"],
-    },
-    others: {
-        type: String,
-    },
-    guardianType: {
-        type: String,
-        required: [true, "Guardian Type is required"],
-    }
-});
+import mongoose from "mongoose";
+
 
 const childSchema = new mongoose.Schema({
     center: { // Owner of Center Admin
@@ -72,7 +45,7 @@ const childSchema = new mongoose.Schema({
     },
     profilePic: {
         type: String,
-        required: [true, "Profile Picture is required"],
+        default: '/default-profile.png'
     },
     education: [
         {
@@ -148,7 +121,7 @@ const childSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const Student = mongoose.model("Student", childSchema);
-export type IStudent = mongoose.InferSchemaType<typeof childSchema>;
+const Staff = mongoose.model("Staff", childSchema);
+export type IStaff = mongoose.InferSchemaType<typeof childSchema>;
 
-export default Student
+export default Staff

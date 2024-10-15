@@ -41,7 +41,7 @@ const uploadDocuement = async (req: Request, res: Response, next: NextFunction):
         const file = req.file;
 
         const newFile = new Upload({
-            file: { ...file, path: path.join("media/profile/", file.originalname) },
+            file: { ...file, path: path.join("media/document/", file.filename) },
             type: "profile"
         })
 

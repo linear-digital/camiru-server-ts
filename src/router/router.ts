@@ -3,10 +3,12 @@ import centerRoute from '../modules/center/center.router'
 import studentRoute from '../modules/student/student.router'
 import classRoute from '../modules/classroom/class.router'
 import uploadRoute from '../modules/upload/upload.router'
+import staffRouter from '../modules/staff/staff.router'
 const router = Router();
 
 router.use('/center', centerRoute)
 router.use('/student', studentRoute)
+router.use('/staff', staffRouter)
 router.use('/classroom', classRoute)
 router.use('/upload', uploadRoute)
 

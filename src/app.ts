@@ -7,7 +7,7 @@ import bodyParser from "body-parser";
 import rootRouter from "./router/router";
 import path from "path";
 import { CenterType } from "./type/user";
-
+import fs from "fs";
 
 dotenv.config();
 
@@ -36,9 +36,40 @@ db.once('open', function () {
 });
 
 // Static media folder
-app.use('/media',
-    express.static(path.join(__dirname, '../media')));
+app.get('/media/:dir/:filename', (req, res) => {
+    const filePath = path.join(__dirname, `../media/${req.params.dir}`, req.params.filename);
 
+    // Check if file exists
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            return res.status(404).json({ message: 'File not found' });
+        }
+
+        // Get file extension for content type
+        const fileExtension = path.extname(filePath).toLowerCase();
+        let contentType;
+
+        switch (fileExtension) {
+            case '.png':
+                contentType = 'image/png';
+                break;
+            case '.jpg':
+            case '.jpeg':
+                contentType = 'image/jpeg';
+                break;
+            case '.pdf':
+                contentType = 'application/pdf';
+                break;
+            default:
+                contentType = 'application/octet-stream';
+        }
+
+        // Set the appropriate content type
+        res.setHeader('Content-Type', contentType);
+        // Send the file as a buffer
+        res.send(data);
+    });
+});
 
 // 
 app.get('/', (_req: Request, res: Response, next: NextFunction) => {

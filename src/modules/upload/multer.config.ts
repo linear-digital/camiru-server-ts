@@ -16,9 +16,24 @@ const profile = multer({
         },
     }),
 });
+const document = multer({
+    storage: multer.diskStorage({
+        destination: (req, file, cb) => {
+            const destination = path.join("media/document/",);
+            if (!fs.existsSync(destination)) {
+                fs.mkdirSync(destination);
+            }
+            cb(null, destination);
+        },
+        filename: function (req, file, cb) {
+            cb(null, Date.now() + path.extname(file.originalname));
+        },
+    }),
+});
 
 const multerConfig = {
-    profile
+    profile,
+    document
 }
 
 export default multerConfig

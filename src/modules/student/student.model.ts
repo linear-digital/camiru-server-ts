@@ -62,6 +62,7 @@ const childSchema = new mongoose.Schema({
     },
     profilePic: {
         type: String,
+        default: '/default-profile.png'
     },
     gender: {
         type: String,

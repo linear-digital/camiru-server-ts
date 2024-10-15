@@ -1,17 +1,17 @@
 import { Query } from "../../type/common";
-import Student, { IStudent } from "./staff.model";
+import Staff, { IStaff } from "./staff.model";
 import bcrypt from 'bcrypt'
 const defaultValue = {
     limit: 20,
     page: 1
 }
 
-const createNew = async (user: IStudent): Promise<IStudent> => {
+const createNew = async (user: IStaff): Promise<IStaff> => {
     try {
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash('123456', salt)
         user.password = hashedPassword
-        const newUser = new Student(user)
+        const newUser = new Staff(user)
         const data = await newUser.save()
         return data
     } catch (error: any) {
@@ -19,12 +19,12 @@ const createNew = async (user: IStudent): Promise<IStudent> => {
     }
 }
 
-const getAll = async (query: any): Promise<IStudent[]> => {
+const getAll = async (query: any): Promise<IStaff[]> => {
     try {
         const page = query.page || defaultValue.page
         const limit = query.limit || defaultValue.limit
         const skip = (page - 1) * limit
-        const data = await Student.find()
+        const data = await Staff.find()
             .populate("center", "firstName lastName email phone")
             .populate("classRoom")
             .select("-password")
@@ -37,7 +37,7 @@ const getAll = async (query: any): Promise<IStudent[]> => {
         throw new Error(error)
     }
 }
-const getStudenByCenter = async (centerId: string, query: any): Promise<IStudent[]> => {
+const getStudenByCenter = async (centerId: string, query: any): Promise<IStaff[]> => {
 
     const page = query.page || defaultValue.page
     const limit = query.limit || defaultValue.limit
@@ -64,7 +64,7 @@ const getStudenByCenter = async (centerId: string, query: any): Promise<IStudent
                 { email: { $regex: search, $options: "i" } },
             ]
         }
-        const data = await Student.find(filters)
+        const data = await Staff.find(filters)
             .populate("center", "firstName lastName email phone")
             .populate("classRoom")
             .skip(skip)
@@ -78,7 +78,7 @@ const getStudenByCenter = async (centerId: string, query: any): Promise<IStudent
     }
 }
 
-const searchStudent = async (centerId: string, query: any): Promise<IStudent[]> => {
+const searchStudent = async (centerId: string, query: any): Promise<IStaff[]> => {
     const page = query.page || defaultValue.page
     const limit = query.limit || defaultValue.limit
     const skip = (page - 1) * limit
@@ -94,7 +94,7 @@ const searchStudent = async (centerId: string, query: any): Promise<IStudent[]> 
         }
         let data
         if (query.wc === "true") {
-            data = await Student.find({
+            data = await Staff.find({
                 ...filters,
                 contact_numbers: { $exists: false },
                 $or: [
@@ -112,7 +112,7 @@ const searchStudent = async (centerId: string, query: any): Promise<IStudent[]> 
                 .exec();
         }
         else {
-            data = await Student.find({
+            data = await Staff.find({
                 ...filters,
 
                 $or: [
@@ -139,7 +139,7 @@ const searchStudent = async (centerId: string, query: any): Promise<IStudent[]> 
 
 const transferStudent = async (id: string, classRoom: string) => {
     try {
-        const data = await Student.findByIdAndUpdate(id, {
+        const data = await Staff.findByIdAndUpdate(id, {
             classRoom: classRoom
         }, { new: true })
         return data
@@ -155,7 +155,7 @@ const getStudentByClass = async (query: any): Promise<any> => {
         const page = query.page || defaultValue.page
         const limit = query.limit || defaultValue.limit
         const skip = (page - 1) * limit
-        const data = await Student.find({
+        const data = await Staff.find({
             classRoom: classRoom,
             center: center
         })
@@ -173,9 +173,9 @@ const getStudentByClass = async (query: any): Promise<any> => {
     }
 }
 
-const getSingle = async (id: string): Promise<IStudent> => {
+const getSingle = async (id: string): Promise<IStaff> => {
     try {
-        const data = await Student.findById(id)
+        const data = await Staff.findById(id)
             .populate("center", "firstName lastName email phone")
             .populate("classRoom")
             .exec();
@@ -188,9 +188,9 @@ const getSingle = async (id: string): Promise<IStudent> => {
     }
 }
 
-const upadteStudent = async (id: string, user: IStudent): Promise<IStudent> => {
+const upadteStudent = async (id: string, user: IStaff): Promise<IStaff> => {
     try {
-        const data = await Student.findByIdAndUpdate(id, user, { new: true })
+        const data = await Staff.findByIdAndUpdate(id, user, { new: true })
         if (!data) {
             throw new Error("User not found")
         }
@@ -202,7 +202,7 @@ const upadteStudent = async (id: string, user: IStudent): Promise<IStudent> => {
 
 const deleteStudent = async (id: string) => {
     try {
-        const data = await Student.findByIdAndDelete(id)
+        const data = await Staff.findByIdAndDelete(id)
         if (!data) {
             throw new Error("User not found")
         }
