@@ -8,6 +8,7 @@ const defaultValue = {
 
 const createNew = async (user: IStaff): Promise<IStaff> => {
     try {
+        
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash('123456', salt)
         user.password = hashedPassword
@@ -26,7 +27,7 @@ const getAll = async (query: any): Promise<IStaff[]> => {
         const skip = (page - 1) * limit
         const data = await Staff.find()
             .populate("center", "firstName lastName email phone")
-            .populate("classRoom")
+            
             .select("-password")
             .skip(skip)
             .limit(limit)
@@ -66,7 +67,7 @@ const getStudenByCenter = async (centerId: string, query: any): Promise<IStaff[]
         }
         const data = await Staff.find(filters)
             .populate("center", "firstName lastName email phone")
-            .populate("classRoom")
+            
             .skip(skip)
             .select("-password")
             .limit(limit)
@@ -104,7 +105,7 @@ const searchStudent = async (centerId: string, query: any): Promise<IStaff[]> =>
                 ]
             })
                 .populate("center", "firstName lastName email phone")
-                .populate("classRoom")
+                
                 .skip(skip)
                 .select("-password")
                 .limit(limit)
@@ -123,7 +124,7 @@ const searchStudent = async (centerId: string, query: any): Promise<IStaff[]> =>
 
             })
                 .populate("center", "firstName lastName email phone")
-                .populate("classRoom")
+                
                 .skip(skip)
                 .select("-password")
                 .limit(limit)
@@ -161,7 +162,7 @@ const getStudentByClass = async (query: any): Promise<any> => {
         })
             .populate("center", "firstName lastName email phone")
             .select("-password")
-            .populate("classRoom")
+            
             .skip(skip)
             .limit(limit)
             .sort({ createdAt: -1 })
@@ -177,7 +178,7 @@ const getSingle = async (id: string): Promise<IStaff> => {
     try {
         const data = await Staff.findById(id)
             .populate("center", "firstName lastName email phone")
-            .populate("classRoom")
+            
             .exec();
         if (!data) {
             throw new Error("User not found")

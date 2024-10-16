@@ -8,11 +8,6 @@ const childSchema = new mongoose.Schema({
         ref: "Center",
         required: [true, "Canter id is required"],
     },
-    classRoom: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "ClassRooms",
-        required: [true, "Class Room is required"],
-    },
     firstName: {
         type: String,
         required: [true, "First Name is required"],
@@ -31,7 +26,7 @@ const childSchema = new mongoose.Schema({
         type: String,
         required: [true, "Phone number is required"],
     },
-    adress: {
+    address: {
         type: String,
         required: [true, "Adress is required"],
     },
@@ -57,11 +52,11 @@ const childSchema = new mongoose.Schema({
                 type: String,
                 required: [true, "Degree is required"],
             },
-            start: {
+            startDate: {
                 type: Date,
                 required: [true, "Start date is required"],
             },
-            end: {
+            endDate: {
                 type: Date,
                 required: [true, "End date is required"],
             },
@@ -73,12 +68,12 @@ const childSchema = new mongoose.Schema({
     ],
     enrollment: [
         {
-            class: {
+            classroom: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "ClassRooms",
                 required: [true, "Class Room is required"],
             },
-            start: {
+            startDate: {
                 type: Date,
                 required: [true, "Start date is required"],
             },
@@ -96,7 +91,7 @@ const childSchema = new mongoose.Schema({
             }
         },
     ],
-    record: [
+    records: [
         {
             title: {
                 type: String,
@@ -107,7 +102,7 @@ const childSchema = new mongoose.Schema({
                 ref: "Upload",
                 required: [true, "File is required"],
             }
-        }
+        },
     ],
     notes: {
         type: Array,

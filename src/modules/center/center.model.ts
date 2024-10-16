@@ -11,7 +11,9 @@ const centerSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: [true, "Email is required"]
+        required: [true, "Email is required"],
+        unique: true,
+        match: [/.+@.+\..+/, "Please enter a valid email address"]
     },
     phone: {
         type: String,
