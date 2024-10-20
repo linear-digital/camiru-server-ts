@@ -30,6 +30,18 @@ const childSchema = new mongoose.Schema({
         type: String,
         required: [true, "Adress is required"],
     },
+    country: {
+        type: String,
+    },
+    city: {
+        type: String,
+    },
+    state: {
+        type: String,
+    },
+    zip: {
+        type: String,
+    },
     dob: {
         type: Date,
         required: [true, "Date of Birth is required"],
