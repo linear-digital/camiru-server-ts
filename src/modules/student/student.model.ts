@@ -129,6 +129,10 @@ const childSchema = new mongoose.Schema({
     },
     graduationDate: {
         type: Date,
+    },
+    report: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Report",
     }
 }, {
     timestamps: true

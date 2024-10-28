@@ -1,4 +1,7 @@
+import moment from "moment";
 import { Query } from "../../type/common";
+import Report from "../report/reports.model";
+import { status } from "../report/status";
 import Student, { IStudent } from "./student.model";
 import bcrypt from 'bcrypt'
 const defaultValue = {
@@ -33,6 +36,7 @@ const getAll = async (query: any): Promise<IStudent[]> => {
         const data = await Student.find()
             .populate("center", "firstName lastName email phone")
             .populate("classRoom")
+            .populate('report')
             .select("-password")
             .skip(skip)
             .limit(limit)
@@ -73,6 +77,7 @@ const getStudenByCenter = async (centerId: string, query: any): Promise<IStudent
         const data = await Student.find(filters)
             .populate("center", "firstName lastName email phone")
             .populate("classRoom")
+            .populate('report')
             .skip(skip)
             .select("-password")
             .limit(limit)
@@ -111,6 +116,7 @@ const searchStudent = async (centerId: string, query: any): Promise<IStudent[]> 
             })
                 .populate("center", "firstName lastName email phone")
                 .populate("classRoom")
+                .populate('report')
                 .skip(skip)
                 .select("-password")
                 .limit(limit)
@@ -130,6 +136,7 @@ const searchStudent = async (centerId: string, query: any): Promise<IStudent[]> 
             })
                 .populate("center", "firstName lastName email phone")
                 .populate("classRoom")
+                .populate('report')
                 .skip(skip)
                 .select("-password")
                 .limit(limit)
@@ -168,6 +175,7 @@ const getStudentByClass = async (query: any): Promise<any> => {
             .populate("center", "firstName lastName email phone")
             .select("-password")
             .populate("classRoom")
+            .populate('report')
             .skip(skip)
             .limit(limit)
             .sort({ createdAt: -1 })
@@ -182,9 +190,10 @@ const getStudentByClass = async (query: any): Promise<any> => {
 const getSingle = async (id: string): Promise<IStudent> => {
     try {
         const data = await Student.findById(id)
-        .populate("center", "firstName lastName email phone")
-        .populate("classRoom")
-        .exec();
+            .populate("center", "firstName lastName email phone")
+            .populate("classRoom")
+            .populate('report')
+            .exec();
         if (!data) {
             throw new Error("User not found")
         }
@@ -213,7 +222,64 @@ const deleteStudent = async (id: string) => {
             throw new Error("User not found")
         }
         return {
-            message : "Student deleted successfully"
+            message: "Student deleted successfully"
+        }
+    } catch (error: any) {
+        throw new Error(error)
+    }
+}
+
+const checkIn = async (id: string, time: string) => {
+    try {
+        const data = await Student.findById(id)
+        if (!data) {
+            throw new Error("User not found")
+        }
+        await Report.findByIdAndUpdate(data.report, {
+            status: status.present,
+            start: time,
+        })
+        await data.save()
+        return {
+            message: "Student checked in successfully"
+        }
+    } catch (error: any) {
+        throw new Error(error)
+    }
+}
+const checkOut = async (id: string, time: string) => {
+    try {
+        const data: any = await Student.findById(id)
+            .populate('report')
+        if (!data) {
+            throw new Error("User not found")
+        }
+        await Report.findByIdAndUpdate(data.report?._id, {
+            status: status.checkedOut,
+            end: time,
+            total: moment(time).diff(data?.report?.start, 'minutes')
+        })
+        await data.save()
+        return {
+            message: "Student checked out successfully"
+        }
+    } catch (error: any) {
+        throw new Error(error)
+    }
+}
+const absent = async (id: string, reason: string) => {
+    try {
+        const data = await Student.findById(id)
+        if (!data) {
+            throw new Error("User not found")
+        }
+        await Report.findByIdAndUpdate(data.report, {
+            status: status.absent,
+            reason: reason
+        })
+        await data.save()
+        return {
+            message: "Student checked out successfully"
         }
     } catch (error: any) {
         throw new Error(error)
@@ -229,7 +295,10 @@ const studenService = {
     getStudentByClass,
     getSingle,
     upadteStudent,
-    deleteStudent
+    deleteStudent,
+    checkIn,
+    checkOut,
+    absent
 }
 
 export default studenService

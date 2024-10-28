@@ -42,7 +42,7 @@ const searchStudent = async (req: Request, res: Response, next: NextFunction) =>
 const transferStudent = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const body = decrypt(req.body)
-        const result = await studenService.transferStudent(req.params.id, req.body.class)
+        const result = await studenService.transferStudent(body.id, body.class)
         res.send(encrypt(result))
     } catch (error) {
         next(error)
@@ -83,6 +83,34 @@ const deleteStudent = async (req: Request, res: Response, next: NextFunction) =>
         next(error)
     }
 }
+
+const checkIn = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const body = decrypt(req.body)
+        const response = await studenService.checkIn(req.params.id, body.time)
+        res.send(encrypt(response))
+    } catch (error) {
+        next(error)
+    }
+}
+const checkOut = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const body = decrypt(req.body)
+        const response = await studenService.checkOut(req.params.id, body.time)
+        res.send(encrypt(response))
+    } catch (error) {
+        next(error)
+    }
+}
+const absent = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const body = decrypt(req.body)
+        const response = await studenService.absent(req.params.id, body.reason)
+        res.send(encrypt(response))
+    } catch (error) {
+        next(error)
+    }
+}
 const studentController = {
     createNew,
     getAll,
@@ -92,6 +120,9 @@ const studentController = {
     getStudentByClass,
     getSingle,
     upadteStudent,
-    deleteStudent
+    deleteStudent,
+    checkIn,
+    checkOut,
+    absent
 }
 export default studentController

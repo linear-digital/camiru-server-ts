@@ -9,7 +9,7 @@ const classRoomSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Center",
         required: true
-    },
+    }
 },
     {
         timestamps: true

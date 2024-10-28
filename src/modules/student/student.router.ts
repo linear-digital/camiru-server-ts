@@ -32,6 +32,11 @@ router.get('/classroom', studentController.getStudentByClass);
 
 router.get('/:id', studentController.getSingle);
 
+// check in
+router.put('/student/checkin/:id', studentController.checkIn);
+router.put('/student/checkout/:id', studentController.checkOut);
+router.put('/student/absent/:id', studentController.absent);
+
 // update student
 
 router.put('/:id', studentController.upadteStudent);

@@ -12,18 +12,13 @@ const io = new Server(server, {
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     }
 });
+
+export let socketProvider = null;
+
 io.on('connection', (socket: any) => {
     const userId = socket.handshake.query.userId as string;
     socket.id = userId;
-
-    socket.on('disconnect', () => {
-        console.log('User disconnected: ' + socket.id);
-    });
-
-    // Custom event: chat message
-    socket.on('chat message', (msg: string) => {
-        io.emit('chat message', msg); // Broadcast the message to all connected clients
-    });
+    socketProvider = socket
 });
 
 

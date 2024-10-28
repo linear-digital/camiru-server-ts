@@ -1,3 +1,4 @@
+import cron from 'node-cron';
 import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -8,17 +9,26 @@ import rootRouter from "./router/router";
 import path from "path";
 import { CenterType } from "./type/user";
 import fs from "fs";
+import generateDailyReport from "./modules/automate/classroom";
 
 dotenv.config();
 
 const app: Application = express();
+
+// Automation
+
+cron.schedule('0 */2 * * *', () => {
+    generateDailyReport();
+}, {
+    scheduled: true
+});
 
 // Middleware
 app.use(bodyParser.json());
 app.use(cors(
     {
         origin: "*",
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     }
 ));
 app.use(cookieParser());
@@ -90,6 +100,7 @@ declare global {
 app.use('/api', rootRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.log(err);
     res.status(err.status || 500).json({
         message: err.message || 'Internal Server Error',
     });
