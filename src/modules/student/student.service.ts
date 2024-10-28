@@ -238,6 +238,8 @@ const checkIn = async (id: string, time: string) => {
         await Report.findByIdAndUpdate(data.report, {
             status: status.present,
             start: time,
+            checkedIn: true,
+            present: true
         })
         await data.save()
         return {
@@ -285,7 +287,56 @@ const absent = async (id: string, reason: string) => {
         throw new Error(error)
     }
 }
+const statistics = async (centerId: string, date: Date) => {
+    try {
+        // Define the start and end of the specified day
+        const startOfDay = new Date(date.setHours(0, 0, 0, 0)); // Midnight at the beginning of the day
+        const endOfDay = new Date(date.setHours(23, 59, 59, 999)); // End of the day
 
+        const total = await Report.countDocuments({
+            center: centerId,
+            createdAt: { $gte: startOfDay, $lte: endOfDay }
+        });
+        const checkedIn = await Report.countDocuments({
+            center: centerId,
+            checkedIn: true,
+            createdAt: { $gte: startOfDay, $lte: endOfDay }
+        });
+        const present = await Report.countDocuments({
+            center: centerId,
+            present: true,
+            createdAt: { $gte: startOfDay, $lte: endOfDay }
+        });
+        const absent = await Report.countDocuments({
+            center: centerId,
+            $or: [
+                { status: status.absent },
+                { status: status.scheduled }  
+            ],
+            createdAt: { $gte: startOfDay, $lte: endOfDay }
+        });
+        const checkedOut = await Report.countDocuments({
+            center: centerId,
+            status: status.checkedOut,
+            createdAt: { $gte: startOfDay, $lte: endOfDay }
+        });
+        const pending = await Report.countDocuments({
+            center: centerId,
+            status: status.notAssigned,
+            createdAt: { $gte: startOfDay, $lte: endOfDay }
+        })
+        return {
+            total,
+            checkedIn,
+            present,
+            absent,
+            checkedOut,
+            pending
+        };
+    } catch (error: any) {
+        throw new Error(`Failed to fetch statistics for the day: ${error.message}`);
+    }
+};
 const studenService = {
     getAll,
     getStudenByCenter,
@@ -298,7 +349,8 @@ const studenService = {
     deleteStudent,
     checkIn,
     checkOut,
-    absent
+    absent,
+    statistics
 }
 
 export default studenService

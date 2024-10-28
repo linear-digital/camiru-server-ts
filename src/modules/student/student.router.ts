@@ -10,6 +10,7 @@ router.post('/', studentController.createNew);
 // get all
 
 router.get('/', studentController.getAll);
+router.post('/statistics', studentController.statistics);
 
 
 // get student by center

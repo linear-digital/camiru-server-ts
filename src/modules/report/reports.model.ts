@@ -32,6 +32,14 @@ const schema = new mongoose.Schema({
     reason: {
         type: String,
     },
+    checkedIn: {
+        type: Boolean,
+        default: false
+    },
+    present: {
+        type: Boolean,
+        default: false
+    },
     description: {
         type: String
     },

@@ -111,6 +111,17 @@ const absent = async (req: Request, res: Response, next: NextFunction) => {
         next(error)
     }
 }
+const statistics = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const body = decrypt(req.body)
+        const date = new Date(body.date as any || new Date())
+        const id = body.id as string
+        const response = await studenService.statistics(id, date)
+        res.send(encrypt(response))
+    } catch (error) {
+        next(error)
+    }
+}
 const studentController = {
     createNew,
     getAll,
@@ -123,6 +134,7 @@ const studentController = {
     deleteStudent,
     checkIn,
     checkOut,
-    absent
+    absent,
+    statistics
 }
 export default studentController
