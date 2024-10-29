@@ -11,7 +11,7 @@ const createNew = async (user: IStaff): Promise<IStaff> => {
 
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash('123456', salt)
-        user.profilePic = user.profilePic ? user.profilePic : '/default-profile.png' 
+        user.profilePic = user.profilePic ? user.profilePic : '/default-profile.png'
         user.password = hashedPassword
         const newUser = new Staff(user)
         const data = await newUser.save()
@@ -52,11 +52,13 @@ const getStudenByCenter = async (centerId: string, query: any): Promise<IStaff[]
             center: centerId,
         }
         if (classRoom) {
-            filters["classRoom"] = classRoom
+            filters["enrollment"] = {
+                $elemMatch: { classroom: classRoom }
+            }
         }
         if (ignore) {
-            filters["classRoom"] = {
-                $nin: ignore
+            filters["enrollment"] = {
+                $not: { $elemMatch: { classroom: ignore } }
             }
         }
         if (search) {
