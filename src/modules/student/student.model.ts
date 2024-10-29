@@ -123,6 +123,18 @@ const childSchema = new mongoose.Schema({
         type: Date,
         required: [true, "Enrollment Date is required"],
     },
+    contact_numbers: {
+        father: {
+            name: String,
+            phone: String,
+            email: String
+        },
+        mother: {
+            name: String,
+            phone: String,
+            email: String
+        }
+    },
     graduate: {
         type: Boolean,
         default: false,

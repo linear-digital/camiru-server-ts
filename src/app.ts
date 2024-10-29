@@ -1,5 +1,10 @@
 import cron from 'node-cron';
-import express, { Application, NextFunction, Request, Response } from "express";
+import express, {
+    Application,
+    NextFunction,
+    Request,
+    Response
+} from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -17,7 +22,7 @@ const app: Application = express();
 
 // Automation
 
-cron.schedule('0 */2 * * *', () => {
+cron.schedule('0 */3 * * *', () => {
     generateDailyReport();
 }, {
     scheduled: true

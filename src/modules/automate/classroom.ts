@@ -18,6 +18,7 @@ const generateDailyReport = async () => {
        const students = await Student.find({})
        const today = moment().format('ddd')
        const reports = await students.map(async (student) => {
+        
            const report = new Report({
                student: student._id,
                center: student.center,

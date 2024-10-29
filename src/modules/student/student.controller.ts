@@ -122,19 +122,42 @@ const statistics = async (req: Request, res: Response, next: NextFunction) => {
         next(error)
     }
 }
-const studentController = {
-    createNew,
-    getAll,
-    getStudenByCenter,
-    searchStudent,
-    transferStudent,
-    getStudentByClass,
-    getSingle,
-    upadteStudent,
-    deleteStudent,
-    checkIn,
-    checkOut,
-    absent,
-    statistics
+
+const attandance = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const body = decrypt(req.body)
+        const id = body.center as string
+        const response = await studenService.attandance(id, body.type, body.year, body.month)
+        res.send(encrypt(response))
+    }
+    catch (error) {
+        next(error)
+    }
 }
-export default studentController
+
+const dbStatistics = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const response = await studenService.dbStatistics(req.query.center as string)
+        res.send(encrypt(response))
+    } catch (error) {
+        next(error)
+    }
+}
+const studentController = {
+        createNew,
+        getAll,
+        getStudenByCenter,
+        searchStudent,
+        transferStudent,
+        getStudentByClass,
+        getSingle,
+        upadteStudent,
+        deleteStudent,
+        checkIn,
+        checkOut,
+        absent,
+        statistics,
+        attandance,
+        dbStatistics
+    }
+    export default studentController

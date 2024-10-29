@@ -11,6 +11,8 @@ router.post('/', studentController.createNew);
 
 router.get('/', studentController.getAll);
 router.post('/statistics', studentController.statistics);
+router.post('/attandance', studentController.attandance);
+router.get('/dashboard', studentController.dbStatistics);
 
 
 // get student by center
