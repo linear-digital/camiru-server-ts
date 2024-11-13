@@ -27,7 +27,6 @@ cron.schedule('0 */3 * * *', () => {
 }, {
     scheduled: true
 });
-
 // Middleware
 app.use(bodyParser.json());
 app.use(cors(

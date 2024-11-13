@@ -220,6 +220,15 @@ const deleteStudent = async (id: string) => {
         throw new Error(error)
     }
 }
+const transper = async (id: string, room: string) => {
+    try {
+        const data = await Staff.findByIdAndUpdate(id, {
+        }, { new: true })
+        return data
+    } catch (error: any) {
+        throw new Error(error)
+    }
+}
 
 const studenService = {
     getAll,
