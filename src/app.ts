@@ -15,6 +15,7 @@ import path from "path";
 import { CenterType } from "./type/user";
 import fs from "fs";
 import generateDailyReport from "./modules/automate/classroom";
+import helmet from 'helmet';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use(cors(
     }
 ));
 app.use(cookieParser());
+app.use(helmet());
 
 const mongoDB: string = process.env.MONGODB_URI || ""; // Use your MongoDB connection string
 
