@@ -9,30 +9,30 @@ const schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: [true, 'Receiver is required']
     },
-    text: {
+    chat: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Chat',
+        required: [true, 'Chat is required']
+    },
+    message: {
         type: String,
     },
     image: {
         type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Upload',
-        default: []
+        ref: 'Upload'
     },
     likes: {
         type: [mongoose.Schema.Types.ObjectId],
-        default: []
     },
     reply: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Message',
-        default: []
     },
     seen: {
         type: Boolean,
-        default: false
     },
     deleted: {
         type: Boolean,
-        default: false
     },
 }, {
     timestamps: true

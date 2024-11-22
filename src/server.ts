@@ -40,12 +40,19 @@ io.use(async (socket: any, next) => {
 io.engine.use(helmet());
 
 export const connectedSockets = new Map();
+export const connectedUsers = new Map();
 
 io.on('connection', (socket: any) => {
     const userId = socket.handshake.query.userId as string;
+    console.log(userId);
     socket.id = userId;
     socketMain(socket);
-    connectedSockets.set(socket.id, socket);    
+    connectedSockets.set(socket.id, socket);   
+    connectedUsers.set(socket.id, socket.user);   
+
+    socket.on('disconnect', () => {
+        connectedSockets.delete(socket.id);
+    });
 });
 
 

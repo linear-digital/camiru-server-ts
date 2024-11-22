@@ -5,8 +5,13 @@ const router = Router()
 
 // create new
 router.post('/', messageController.createMessage);
-
+router.get('/', messageController.getMessages)
 // create a chat
 router.post('/chat', messageController.createNewChat)
+router.get('/chat', messageController.getChats)
+router.get('/chat/user/:id', messageController.chatByUser)
+router.get('/chat/:id', messageController.getAChat)
+
+
 
 export default router

@@ -1,32 +1,38 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Document, Model } from 'mongoose';
 
-const chatSchema = new mongoose.Schema({
+interface OwnerOrUser {
+  id: mongoose.Schema.Types.ObjectId;
+  model: 'Staff' | 'Student' | 'Center';
+}
+
+export interface IChat extends Document {
+  owner: OwnerOrUser;
+  user: OwnerOrUser;
+  message: mongoose.Schema.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const ChatSchema = new Schema<IChat>(
+  {
     owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        userType: {
-            type: String,
-            enum: ['admin', 'center', 'staff', 'student'],
-        },
-        required: [true, 'User 1 is required']
+      id: { type: mongoose.Schema.Types.ObjectId, required: true },
+      model: { type: String, required: true, enum: ['Staff', 'Student', 'Center'] },
     },
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        userType: {
-            type: String,
-            enum: ['admin', 'center', 'staff', 'student'],
-        },
-        required: [true, 'User 2 is required']
+      id: { type: mongoose.Schema.Types.ObjectId, required: true },
+      model: { type: String, required: true, enum: ['Staff', 'Student', 'Center'] },
     },
     message: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Message',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Message',
     },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-},
- {
-    timestamps: true
-})
-
-const Chat = mongoose.model('Chat', chatSchema);
+const Chat: Model<IChat> = mongoose.model<IChat>('Chat', ChatSchema);
 
 export default Chat
