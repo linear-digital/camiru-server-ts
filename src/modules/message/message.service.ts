@@ -36,13 +36,13 @@ const createNewChat = async (data: any) => {
         // Create a new chat if no existing chat in either direction
         let newChat;
         if (!existingChat1) {
-            await Chat.create(data);
-        }
-        if (!existingChat2) {
-            newChat = await Chat.create({
+             await Chat.create({
                 owner: user,
                 user: owner,
             });
+        }
+        if (!existingChat2) {
+            newChat = await Chat.create(data);
         }
 
         // Decide which chat to return: newChat or the existing one
@@ -112,7 +112,8 @@ const getChats = async () => {
 const chatByUser = async (id: string) => {
     try {
         // Fetch chats without population
-        const chats = await Chat.find({ "owner.id": id });
+        const chats = await Chat.find({ "owner.id": id })
+        .sort({ updatedAt: -1 })
 
         // Dynamically apply population based on the `model` field
         for (const chat of chats) {
@@ -190,13 +191,28 @@ const getMessages = async (query: any) => {
         throw new Error(error)
     }
 }
+
+const deleteMessage = async (id: string) => {
+    try {
+        const data = await Message.findByIdAndDelete(id)
+        if (!data) {
+            throw new Error("Message not found")
+        }
+        return {
+            message: "Message deleted successfully"
+        }
+    } catch (error: any) {
+        throw new Error(error)
+    }
+}
 const messageService = {
     createMessage,
     createNewChat,
     getChats,
     chatByUser,
     getAChat,
-    getMessages
+    getMessages,
+    deleteMessage
 }
 
 export default messageService
