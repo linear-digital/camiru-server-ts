@@ -54,12 +54,12 @@ const createNewChat = async (data: any) => {
                 {
                     path: 'owner.id',
                     model: chatToReturn.owner.model as DynamicModel, // Dynamic model
-                    select: 'firstName lastName profilePic',
+                    select: 'firstName lastName profilePic active',
                 },
                 {
                     path: 'user.id',
                     model: chatToReturn.user.model as DynamicModel, // Dynamic model
-                    select: 'firstName lastName profilePic',
+                    select: 'firstName lastName profilePic active',
                 },
             ]);
         }
@@ -85,7 +85,7 @@ const getChats = async () => {
                     await chat.populate({
                         path: 'owner.id',
                         model: chat.owner.model as DynamicModel, // Specify dynamic model
-                        select: 'firstName lastName profilePic',
+                        select: 'firstName lastName profilePic active',
                     });
                 }
 
@@ -94,7 +94,7 @@ const getChats = async () => {
                     await chat.populate({
                         path: 'user.id',
                         model: chat.user.model as DynamicModel, // Specify dynamic model
-                        select: 'firstName lastName profilePic',
+                        select: 'firstName lastName profilePic active',
                     });
                 }
 
@@ -122,7 +122,7 @@ const chatByUser = async (id: string) => {
             //     await chat.populate({
             //         path: 'owner.id',
             //         model: chat.owner.model as DynamicModel, // Dynamically select the model
-            //         select: 'firstName lastName profilePic',
+            //         select: 'firstName lastName profilePic active',
             //     });
             // }
 
@@ -131,7 +131,7 @@ const chatByUser = async (id: string) => {
                 await chat.populate({
                     path: 'user.id',
                     model: chat.user.model as DynamicModel, // Dynamically select the model
-                    select: 'firstName lastName profilePic',
+                    select: 'firstName lastName profilePic active',
                 });
             }
 
@@ -155,7 +155,7 @@ const getAChat = async (id: string) => {
             await chat.populate({
                 path: 'owner.id',
                 model: chat.owner.model as DynamicModel, // Dynamically select the model
-                select: 'firstName lastName profilePic',
+                select: 'firstName lastName profilePic active',
             });
         }
 
@@ -164,7 +164,7 @@ const getAChat = async (id: string) => {
             await chat.populate({
                 path: 'user.id',
                 model: chat.user.model as DynamicModel, // Dynamically select the model
-                select: 'firstName lastName profilePic',
+                select: 'firstName lastName profilePic active',
             });
         }
 
@@ -191,7 +191,17 @@ const getMessages = async (query: any) => {
         throw new Error(error)
     }
 }
-
+const updateMessage = async (id: string, body: IMessage) => {
+    try {
+        const data = await Message.findByIdAndUpdate(id, body, { new: true })
+        if (!data) {
+            throw new Error("Message not found")
+        }
+        return data
+    } catch (error: any) {
+        throw new Error(error)
+    }
+}
 const deleteMessage = async (id: string) => {
     try {
         const data = await Message.findByIdAndDelete(id)
@@ -205,6 +215,7 @@ const deleteMessage = async (id: string) => {
         throw new Error(error)
     }
 }
+
 const messageService = {
     createMessage,
     createNewChat,
@@ -212,7 +223,8 @@ const messageService = {
     chatByUser,
     getAChat,
     getMessages,
-    deleteMessage
+    deleteMessage,
+    updateMessage
 }
 
 export default messageService

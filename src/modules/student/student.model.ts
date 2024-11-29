@@ -145,6 +145,10 @@ const childSchema = new mongoose.Schema({
     report: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Report",
+    },
+    active: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

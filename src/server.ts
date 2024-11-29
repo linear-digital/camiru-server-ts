@@ -4,19 +4,31 @@ import http from 'http';
 import socketMain from "./socket/socket";
 import Center from "./modules/center/center.model";
 import mongoose from "mongoose";
-import findUserById from "./util/findUser";
+import findUserById, { makeInActive } from "./util/findUser";
 import helmet from "helmet";
 
 const PORT = 4000;
 const server = http.createServer(app);
 
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://camiru.com"
+];
+
 const io = new Server(server, {
     cors: {
-        origin: "*",
-        credentials: true
-    }
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Origin not allowed by CORS"));
+            }
+        },
+        methods: ["GET", "POST"],
+        credentials: true,
+    },
 });
-
+export let socketIO: Socket = null as any
 io.use(async (socket: any, next) => {
     const userId = socket.handshake.query.userId as string;
     if (!userId) {
@@ -31,6 +43,7 @@ io.use(async (socket: any, next) => {
         }
         socket.user = user
         socket.id = userId
+       
         next();
     } catch (error) {
         next(new Error('Internal server error'));
@@ -40,18 +53,27 @@ io.use(async (socket: any, next) => {
 io.engine.use(helmet());
 
 export const connectedSockets = new Map();
-export const connectedUsers = new Map();
+export const connectedUsers: any = []
 
 io.on('connection', (socket: any) => {
     const userId = socket.handshake.query.userId as string;
-    console.log(userId);
+    socketIO = socket
     socket.id = userId;
     socketMain(socket);
-    connectedSockets.set(socket.id, socket);   
-    connectedUsers.set(socket.id, socket.user);   
-
+    connectedSockets.set(socket.id, socket);
+    const newCU = {
+        id: socket.id,
+        time: new Date().toISOString(),
+        user: socket.user
+    }
+    if (!connectedUsers.find((cu: any) => cu.id === socket.id)) {
+        connectedUsers.push(newCU);
+        socket.broadcast.emit('userConnected', socket.id)
+    }
     socket.on('disconnect', () => {
         connectedSockets.delete(socket.id);
+        connectedUsers.splice(connectedUsers.findIndex((cu: any) => cu.id === socket.id), 1)
+        makeInActive(socket.id)
     });
 });
 

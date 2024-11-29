@@ -11,7 +11,11 @@ router.post('/chat', messageController.createNewChat)
 router.get('/chat', messageController.getChats)
 router.get('/chat/user/:id', messageController.chatByUser)
 router.get('/chat/:id', messageController.getAChat)
-router.delete('/msg/:id', messageController.deleteMessage)
+
+// update message
+router.put('/:id', messageController.updateMessage)
+// delete message
+router.delete('/:id', messageController.deleteMessage)
 
 
 

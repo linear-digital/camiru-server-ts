@@ -57,6 +57,15 @@ const getMessages = async (req: Request, res: Response, next: NextFunction) => {
         next(error)
     }
 }
+const updateMessage = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const body = decrypt(req.body)
+        const result = await messageService.updateMessage(req.params.id, body)
+        res.send(encrypt(result))
+    } catch (error) {
+        next(error)
+    }
+}
 const deleteMessage = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const result = await messageService.deleteMessage(req.params.id)
@@ -72,7 +81,8 @@ const messageController = {
     chatByUser,
     getAChat,
     getMessages,
-    deleteMessage
+    deleteMessage,
+    updateMessage
 }
 
 export default messageController

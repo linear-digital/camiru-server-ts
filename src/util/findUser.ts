@@ -4,9 +4,9 @@ import Student from "../modules/student/student.model";
 
 async function findUserById(id: string) {
     const [user, student, staff] = await Promise.all([
-        Center.findById(id).select('firstName lastName'),
-        Student.findById(id).select('firstName lastName'),
-        Staff.findById(id).select('firstName lastName'),
+        Center.findByIdAndUpdate(id, { active: true }, { new: true }).select('firstName lastName active'),
+        Student.findByIdAndUpdate(id, { active: true }, { new: true }).select('firstName lastName active'),
+        Staff.findByIdAndUpdate(id, { active: true }, { new: true }).select('firstName lastName active'),
     ]);
 
     if (user) return user;
@@ -14,6 +14,19 @@ async function findUserById(id: string) {
     if (staff) return staff;
 
     return null;
+}
+
+export const makeInActive = async (id: string) => {
+    const center = await Center.findByIdAndUpdate(id, { active: false }, { new: true }).select('firstName lastName active')
+    if (center) {
+        return center
+    }
+    const student = await Student.findByIdAndUpdate(id, { active: false }, { new: true }).select('firstName lastName active')
+    if (student) {
+        return student
+    }
+    const staff = await Staff.findByIdAndUpdate(id, { active: false }, { new: true }).select('firstName lastName active');
+    return staff
 }
 
 export default findUserById

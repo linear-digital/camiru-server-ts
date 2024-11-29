@@ -103,6 +103,10 @@ const centerSchema = new mongoose.Schema({
     lastActive: {
         type: Date,
         default: Date.now
+    },
+    active: {
+        type: Boolean,
+        default: false
     }
 },
 {
