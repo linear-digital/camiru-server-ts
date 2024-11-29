@@ -53,6 +53,33 @@ const uploadDocuement = async (req: Request, res: Response, next: NextFunction):
         next(error)
     }
 }
+const uploadMany = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+        if (!req.files) {
+            return res.status(400).json();
+        }
+        const files: any = req.files;
+        const result = await Promise.all(files.map(async (file: any) => {
+            const resizedFileName = `${Date.now()}` + path.extname(file.originalname);
+            await sharp(file.path)
+                .resize({ width: 300 })
+                .toFile(path.join("media/document/", resizedFileName));
+            // delete old file
+            if (fs.existsSync(file.path)) {
+                fs.unlinkSync(file.path);
+            }
+            const newFile = new Upload({
+                file: { ...file, path: path.join("media/document/", resizedFileName) },
+                type: "profile"
+            })
+            const result = await newFile.save();
+            return result
+        }))
+        res.status(200).json(encrypt(result));
+    } catch (error: any) {
+        next(error)
+    }
+}
 
 const getAllProfile = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const page: any = req.query.page || 1
@@ -117,6 +144,7 @@ const uploadController = {
     getAllProfile,
     deleteAllProfile,
     deleteSingle,
-    uploadDocuement
+    uploadDocuement,
+    uploadMany
 }
 export default uploadController

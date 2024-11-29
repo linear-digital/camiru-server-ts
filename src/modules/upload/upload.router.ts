@@ -9,6 +9,10 @@ const router = Router();
 // create new
 router.post('/profile', centerChecker, multerConfig.profile.single('image'), uploadController.uploadProfile);
 
+
+// create new
+router.post('/image', centerChecker, multerConfig.document.array('image'), uploadController.uploadMany);
+
 // Upload Document
 router.post('/document', centerChecker, multerConfig.document.single('document'), uploadController.uploadDocuement);
 

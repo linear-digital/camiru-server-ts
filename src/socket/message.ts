@@ -15,6 +15,7 @@ const messageHandler = async (io: Socket) => {
         // sendMessageToSpecificUser(data, data)
 
         const result = await messageService.createMessage(data)
+        sendMessageToSpecificUser(data.receiver, result)
         io.emit('message', result)
         // console.log(data);
     })
