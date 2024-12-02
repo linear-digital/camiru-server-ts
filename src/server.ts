@@ -12,7 +12,7 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
     "http://localhost:3000",
-    "https://camiru.com"
+    "https://camiru.com",
 ];
 
 const io = new Server(server, {
