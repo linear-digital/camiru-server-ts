@@ -2,7 +2,7 @@ import { Socket } from "socket.io";
 import { connectedSockets } from "../server";
 import messageService from "../modules/message/message.service";
 
-const sendMessageToSpecificUser = (socketId: string, message: any) => {
+export const sendMessageToSpecificUser = (socketId: string, message: any) => {
     if (connectedSockets.has(socketId)) {
         const socket2 = connectedSockets.get(socketId);
         socket2.emit("message", message);
@@ -17,7 +17,7 @@ const messageHandler = async (io: Socket) => {
         const result = await messageService.createMessage(data)
         sendMessageToSpecificUser(data.receiver, result)
         io.emit('message', result)
-        // console.log(data);
+        // console.log(data);   
     })
 
 }
