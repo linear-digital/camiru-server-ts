@@ -6,6 +6,7 @@ import Student, { IStudent } from "./student.model";
 import bcrypt from 'bcrypt'
 import ClassRoom from "../classroom/classroom.model";
 import Staff from "../staff/staff.model";
+import tokenGenerator from "../../util/generateToken";
 const defaultValue = {
     limit: 20,
     page: 1
@@ -25,6 +26,24 @@ const createNew = async (user: IStudent): Promise<IStudent> => {
         const newUser = new Student(user)
         const data = await newUser.save()
         return data
+    } catch (error: any) {
+        throw new Error(error)
+    }
+}
+
+const login = async (body: { email: string, password: string }) => {
+    try {
+        const data = await Student.findOne({ email: body.email })
+        if (!data) {
+            throw new Error("User not found")
+        }
+        const isMatch = body.password === data.password
+        if (isMatch) {
+            const accessToken = await tokenGenerator.generateStudentToken(data, "30d")
+            return { message: "login success", accessToken }
+        } else {
+            throw new Error("Wrong password")
+        }
     } catch (error: any) {
         throw new Error(error)
     }
@@ -419,7 +438,7 @@ const dbStatistics = async (center: string) => {
         const classRooms = await ClassRoom.countDocuments({ center: center });
         const students = await Student.countDocuments({ center: center });
         const staffs = await Staff.countDocuments({ center: center });
-        const withcontact = await Student.countDocuments({  contact_numbers: { $exists: true }, center: center });
+        const withcontact = await Student.countDocuments({ contact_numbers: { $exists: true }, center: center });
         const data = {
             classRooms,
             students,
@@ -431,7 +450,17 @@ const dbStatistics = async (center: string) => {
         throw new Error(error)
     }
 }
-
+const getCurrentUser = async(id: string) => {
+    try {
+        const data = await Student.findById(id)
+        if (!data) {
+            throw new Error("User not found")
+        }
+        return data
+    } catch (error: any) {
+        throw new Error(error)
+    }
+}
 const studenService = {
     getAll,
     getStudenByCenter,
@@ -447,7 +476,9 @@ const studenService = {
     absent,
     statistics,
     attandance: attendance,
-    dbStatistics
+    dbStatistics,
+    login,
+    getCurrentUser
 }
 
 export default studenService

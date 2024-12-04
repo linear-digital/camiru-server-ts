@@ -33,6 +33,10 @@ const childSchema = new mongoose.Schema({
         ref: "Center",
         required: [true, "Center is required"],
     },
+    role: {
+        type: String,
+        default: "student",
+    },
     classRoom: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "ClassRooms",

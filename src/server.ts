@@ -2,17 +2,16 @@ import app from "./app";
 import { Server, Socket } from 'socket.io';
 import http from 'http';
 import socketMain from "./socket/socket";
-import Center from "./modules/center/center.model";
-import mongoose from "mongoose";
 import findUserById, { makeInActive } from "./util/findUser";
 import helmet from "helmet";
-
+import { instrument } from "@socket.io/admin-ui";
 const PORT = 4000;
 const server = http.createServer(app);
 
 const allowedOrigins = [
     "http://localhost:3000",
     "https://camiru.com",
+    "https://admin.socket.io",
 ];
 
 const io = new Server(server, {
@@ -28,6 +27,14 @@ const io = new Server(server, {
         credentials: true,
     },
 });
+instrument(io, {
+    auth: {
+        type: "basic",
+        username: "admin",
+        password: "$2a$12$aT17OgQqaKX6lEHNkYTY7Ou.iMG1GVTESRXpUDKjRpjQbamqGPQ..",
+    }
+});
+
 export let socketIO: Socket = null as any
 io.use(async (socket: any, next) => {
     const userId = socket.handshake.query.userId as string;
@@ -43,7 +50,7 @@ io.use(async (socket: any, next) => {
         }
         socket.user = user
         socket.id = userId
-       
+
         next();
     } catch (error) {
         next(new Error('Internal server error'));

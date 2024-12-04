@@ -1,12 +1,13 @@
 import { Router } from "express";
 import studentController from "./student.controller";
+import { studentChecker } from "../../helper/userChecker";
 
 const router = Router();
 
 // create new
 
 router.post('/', studentController.createNew);
-
+router.post('/login', studentController.login);
 // get all
 
 router.get('/', studentController.getAll);
@@ -16,7 +17,7 @@ router.get('/dashboard', studentController.dbStatistics);
 
 
 // get student by center
-
+router.get('/me', studentChecker, studentController.getCurrentUser);
 router.get('/center/:id', studentController.getStudenByCenter);
 
 // search student

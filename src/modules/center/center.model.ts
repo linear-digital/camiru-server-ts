@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const centerSchema = new mongoose.Schema({
+    role: {
+        type: String,
+        default: "center"
+    },
     firstName: {
         type: String,
         required: [true, "First name is required"],

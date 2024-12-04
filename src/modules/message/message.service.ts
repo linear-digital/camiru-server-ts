@@ -184,8 +184,11 @@ const getMessages = async (query: any) => {
             throw new Error('Chat not found');
         }
         const messages = await Message.find({
-            chat: query.chat
-        })
+            $or: [
+                { sender: chat.owner.id, receiver: chat.user.id },
+                { sender: chat.user.id, receiver: chat.owner.id },
+            ],
+        }).populate('image')
         return messages
     } catch (error: any) {
         throw new Error(error)

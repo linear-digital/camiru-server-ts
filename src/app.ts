@@ -99,6 +99,8 @@ declare global {
     namespace Express {
         interface Request {
             center?: CenterType;
+            student?: any;
+            staff?: any;
         }
     }
 }

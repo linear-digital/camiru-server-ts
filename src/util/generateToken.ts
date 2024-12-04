@@ -19,7 +19,19 @@ const generateCenterToken = async (user: any, time: string, sessionId: string) =
     const id = encrypt(user._id)
     const session = encrypt(sessionId)
     const token = await jwt.sign({
-        id: id
+        id: id,
+        role: "center",
+    }, secret, {
+        expiresIn: time
+    })
+    return token
+}
+const generateStudentToken = async (user: any, time: string) => {
+    const secret = process.env.JWT_SECRET as string
+    const id = encrypt(user._id)
+    const token = await jwt.sign({
+        id: id,
+        role: "student"
     }, secret, {
         expiresIn: time
     })
@@ -27,6 +39,7 @@ const generateCenterToken = async (user: any, time: string, sessionId: string) =
 }
 
 const tokenGenerator = {
-    generateCenterToken
+    generateCenterToken,
+    generateStudentToken
 }
 export default tokenGenerator
