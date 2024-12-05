@@ -41,7 +41,7 @@ const uploadDocuement = async (req: Request, res: Response, next: NextFunction):
         const file = req.file;
 
         const newFile = new Upload({
-            file: { ...file, path: path.join("media/document/", file.filename) },
+            file: { ...file, path:  path.join("media/document/", file.filename) },
             type: "profile"
         })
 
@@ -56,30 +56,47 @@ const uploadDocuement = async (req: Request, res: Response, next: NextFunction):
 const uploadMany = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
         if (!req.files) {
-            return res.status(400).json();
+            return res.status(400).json({ message: "No files uploaded" });
         }
+
         const files: any = req.files;
-        const result = await Promise.all(files.map(async (file: any) => {
-            const resizedFileName = `${Date.now()}` + path.extname(file.originalname);
-            await sharp(file.path)
-                .resize({ width: 300 })
-                .toFile(path.join("media/document/", resizedFileName));
-            // delete old file
-            if (fs.existsSync(file.path)) {
-                fs.unlinkSync(file.path);
-            }
-            const newFile = new Upload({
-                file: { ...file, path: path.join("media/document/", resizedFileName) },
-                type: "profile"
+
+        // Process files
+        const result = await Promise.all(
+            files.map(async (file: any) => {
+                const supportedFormats = ['jpeg', 'png', 'webp', 'avif', 'gif'];
+                const fileExt = path.extname(file.originalname).toLowerCase().replace('.', '');
+
+                let processedFilePath = file.path; // Default path if no processing is done
+                if (supportedFormats.includes(fileExt)) {
+                    const resizedFileName = `${Date.now()}${path.extname(file.originalname)}`;
+                    processedFilePath = path.join("media/document/", resizedFileName);
+
+                    // Resize image
+                    await sharp(file.path)
+                        .resize({ width: 300 })
+                        .toFile(processedFilePath);
+
+                    // Delete the original file
+                    if (fs.existsSync(file.path)) {
+                        fs.unlinkSync(file.path);
+                    }
+                }
+
+                // Save file info to database
+                const newFile = new Upload({
+                    file: { ...file, path: processedFilePath },
+                    type: "profile"
+                });
+                return await newFile.save();
             })
-            const result = await newFile.save();
-            return result
-        }))
+        );
+
         res.status(200).json(encrypt(result));
     } catch (error: any) {
-        next(error)
+        next(error);
     }
-}
+};
 
 const getAllProfile = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const page: any = req.query.page || 1

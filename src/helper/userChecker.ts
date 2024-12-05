@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { CenterType } from '../type/user';
 import Student from '../modules/student/student.model';
+import findUserById, { findUser } from '../util/findUser';
 
 const centerChecker = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -27,7 +28,7 @@ const centerChecker = async (req: Request, res: Response, next: NextFunction) =>
         const id = decrypt(
             data.id
         );
-        const user = await Center.findById(id) as CenterType;
+        const user = await findUser(id);
         if (!user) {
             res.status(404).send({ message: 'User not found' });
         }

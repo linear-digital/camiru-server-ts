@@ -16,6 +16,20 @@ async function findUserById(id: string) {
     return null;
 }
 
+export const findUser = async (id: string): Promise<any> => {
+    const [user, student, staff] = await Promise.all([
+        Center.findById(id).select('firstName lastName active'),
+        Student.findById(id).select('firstName lastName active'),
+        Staff.findById(id).select('firstName lastName active'),
+    ]);
+
+    if (user) return user;
+    if (student) return student;
+    if (staff) return staff;
+
+    return null;
+}
+
 export const makeInActive = async (id: string) => {
     const center = await Center.findByIdAndUpdate(id, { active: false }, { new: true }).select('firstName lastName active')
     if (center) {

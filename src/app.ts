@@ -30,12 +30,7 @@ cron.schedule('0 */3 * * *', () => {
 });
 // Middleware
 app.use(bodyParser.json());
-app.use(cors(
-    {
-        origin: "*",
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    }
-));
+app.use(cors());
 app.use(cookieParser());
 app.use(helmet());
 
@@ -53,38 +48,51 @@ db.once('open', function () {
 
 // Static media folder
 app.get('/media/:dir/:filename', (req, res) => {
-    const filePath = path.join(__dirname, `../media/${req.params.dir}`, req.params.filename);
+    try {
+        const filePath = path.join(__dirname, `../media/${req.params.dir}`, req.params.filename);
 
-    // Check if file exists
-    fs.readFile(filePath, (err, data) => {
-        if (err) {
-            return res.status(404).json({ message: 'File not found' });
-        }
+        // Check if file exists
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                const fallbackPath = path.join(__dirname, `../media`, '404.png');
+                fs.readFile(fallbackPath, (fallbackErr, fallbackData) => {
+                    res.setHeader('Content-Type', 'image/png');
+                    res.setHeader('Access-Control-Allow-Origin', '*'); // Allow cross-origin access
+                    res.send(fallbackData);
+                });
+                return;
+            }
 
-        // Get file extension for content type
-        const fileExtension = path.extname(filePath).toLowerCase();
-        let contentType;
+            // Get file extension for content type
+            const fileExtension = path.extname(filePath).toLowerCase();
+            let contentType;
 
-        switch (fileExtension) {
-            case '.png':
-                contentType = 'image/png';
-                break;
-            case '.jpg':
-            case '.jpeg':
-                contentType = 'image/jpeg';
-                break;
-            case '.pdf':
-                contentType = 'application/pdf';
-                break;
-            default:
-                contentType = 'application/octet-stream';
-        }
+            switch (fileExtension) {
+                case '.png':
+                    contentType = 'image/png';
+                    break;
+                case '.jpg':
+                case '.jpeg':
+                    contentType = 'image/jpeg';
+                    break;
+                case '.pdf':
+                    contentType = 'application/pdf';
+                    break;
+                default:
+                    contentType = 'application/octet-stream';
+            }
 
-        // Set the appropriate content type
-        res.setHeader('Content-Type', contentType);
-        // Send the file as a buffer
-        res.send(data);
-    });
+            // Set appropriate headers
+            res.setHeader('Content-Type', contentType);
+            res.setHeader('Access-Control-Allow-Origin', '*'); // Allow cross-origin access
+
+            // Send the file as a buffer
+            res.send(data);
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Server Error');
+    }
 });
 
 // 
