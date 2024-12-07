@@ -18,9 +18,9 @@ async function findUserById(id: string) {
 
 export const findUser = async (id: string): Promise<any> => {
     const [user, student, staff] = await Promise.all([
-        Center.findById(id).select('firstName lastName active'),
-        Student.findById(id).select('firstName lastName active'),
-        Staff.findById(id).select('firstName lastName active'),
+        Center.findById(id).select('-password'),
+        Student.findById(id).select('-password'),
+        Staff.findById(id).select('-password'),
     ]);
 
     if (user) return user;

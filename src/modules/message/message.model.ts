@@ -30,9 +30,11 @@ const schema = new mongoose.Schema({
     },
     seen: {
         type: Boolean,
+        default: false
     },
     deleted: {
         type: Boolean,
+        default: false
     },
 }, {
     timestamps: true

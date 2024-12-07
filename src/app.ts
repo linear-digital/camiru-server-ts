@@ -30,9 +30,16 @@ cron.schedule('0 */3 * * *', () => {
 });
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:3000', 'https://camiru.com', 'https://admin.socket.io'],
+    credentials: true
+}));
+
+app.use(helmet({
+    crossOriginResourcePolicy: false,
+    contentSecurityPolicy: false
+}));
 app.use(cookieParser());
-app.use(helmet());
 
 const mongoDB: string = process.env.MONGODB_URI || ""; // Use your MongoDB connection string
 
@@ -46,23 +53,28 @@ db.once('open', function () {
     console.log("Successfully connected to MongoDB!");
 });
 
+
+
+// app.use(express.static(path.join(__dirname, '../media')))
+
 // Static media folder
-app.get('/media/:dir/:filename', (req, res) => {
+app.get('/media/:dir/:filename', (req : Request, res : Response): void => {
     try {
         const filePath = path.join(__dirname, `../media/${req.params.dir}`, req.params.filename);
 
         // Check if file exists
-        fs.readFile(filePath, (err, data) => {
-            if (err) {
-                const fallbackPath = path.join(__dirname, `../media`, '404.png');
-                fs.readFile(fallbackPath, (fallbackErr, fallbackData) => {
-                    res.setHeader('Content-Type', 'image/png');
-                    res.setHeader('Access-Control-Allow-Origin', '*'); // Allow cross-origin access
-                    res.send(fallbackData);
-                });
-                return;
-            }
+        if (!fs.existsSync(filePath)) {
+            const fallbackPath = path.join(__dirname, '../media', '404.png');
+            const fallbackStream = fs.createReadStream(fallbackPath);
 
+            // Set the fallback content type
+            res.setHeader('Content-Type', 'image/png');
+            res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
+            res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+            fallbackStream.pipe(res);
+        }
+        else {
             // Get file extension for content type
             const fileExtension = path.extname(filePath).toLowerCase();
             let contentType;
@@ -82,15 +94,16 @@ app.get('/media/:dir/:filename', (req, res) => {
                     contentType = 'application/octet-stream';
             }
 
-            // Set appropriate headers
+            // Set the content type and stream the file
             res.setHeader('Content-Type', contentType);
-            res.setHeader('Access-Control-Allow-Origin', '*'); // Allow cross-origin access
+            res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
+            res.setHeader('Access-Control-Allow-Credentials', 'false');
 
-            // Send the file as a buffer
-            res.send(data);
-        });
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
+        }
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).send('Server Error');
     }
 });

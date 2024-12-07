@@ -1,5 +1,5 @@
 import { Socket } from "socket.io"
-import jwt  from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { connectedSockets } from "../server";
 const callSocket = (socket: Socket) => {
     // Handle signaling data
@@ -13,20 +13,28 @@ const callSocket = (socket: Socket) => {
                 name: decodeToken?.sub,
                 room: data.room,
                 target: data.target,
-                profilePic: data.profilePic
+                profilePic: data.profilePic,
+                caller: data.caller
             });
         }
     });
 
-    socket.on("answer", (data) => {
-        socket.to(data.target).emit("answer", data);
+    socket.on("accept", (data) => {
+        data.target.map((socketId: string) => {
+            if (connectedSockets.has(socketId)) {
+                const socket2 = connectedSockets.get(socketId);
+                socket2.emit("accept", data);
+            }
+        })
     });
 
     socket.on("end", (data) => {
-        if (connectedSockets.has(data.target)) {
-            const socket2 = connectedSockets.get(data.target);
-            socket2.emit("end", data);
-        }
+        data.target.map((socketId: string) => {
+            if (connectedSockets.has(socketId)) {
+                const socket2 = connectedSockets.get(socketId);
+                socket2.emit("end", data);
+            }
+        })
     });
 }
 
