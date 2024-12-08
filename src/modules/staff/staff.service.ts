@@ -1,4 +1,5 @@
 import { Query } from "../../type/common";
+import tokenGenerator from "../../util/generateToken";
 import Staff, { IStaff } from "./staff.model";
 import bcrypt from 'bcrypt'
 const defaultValue = {
@@ -230,6 +231,24 @@ const transper = async (id: string, room: string) => {
     }
 }
 
+const login = async (body: { email: string, password: string }) => {
+    try {
+        const data = await Staff.findOne({ email: body.email })
+        if (!data) {
+            throw new Error("User not found")
+        }
+        const isMatch = await bcrypt.compare(body.password, data.password)
+        if (isMatch) {
+            const accessToken = await tokenGenerator.generateCenterToken(data, "30d", "staff")
+            return { message: "login success", accessToken }
+        } else {
+            throw new Error("Wrong password")
+        }
+    } catch (error: any) {
+        throw new Error(error)
+    }
+}
+
 const studenService = {
     getAll,
     getStudenByCenter,
@@ -239,7 +258,8 @@ const studenService = {
     getStudentByClass,
     getSingle,
     upadteStudent,
-    deleteStudent
+    deleteStudent,
+    login
 }
 
 export default studenService

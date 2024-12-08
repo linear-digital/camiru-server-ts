@@ -14,32 +14,20 @@
 import jwt from 'jsonwebtoken'
 import { encrypt } from './security'
 
-const generateCenterToken = async (user: any, time: string, sessionId: string) => {
-    const secret = process.env.JWT_SECRET as string
-    const id = encrypt(user._id)
-    const session = encrypt(sessionId)
-    const token = await jwt.sign({
-        id: id,
-        role: "center",
-    }, secret, {
-        expiresIn: time
-    })
-    return token
-}
-const generateStudentToken = async (user: any, time: string) => {
+const generateCenterToken = async (user: any, time: string, role: string) => {
     const secret = process.env.JWT_SECRET as string
     const id = encrypt(user._id)
     const token = await jwt.sign({
         id: id,
-        role: "student"
+        role: role
     }, secret, {
         expiresIn: time
     })
     return token
 }
 
+
 const tokenGenerator = {
-    generateCenterToken,
-    generateStudentToken
+    generateCenterToken
 }
 export default tokenGenerator

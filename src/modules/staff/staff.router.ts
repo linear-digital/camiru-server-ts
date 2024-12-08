@@ -1,5 +1,6 @@
 import { Router } from "express";
 import studentController from "./staff.controller";
+import centerChecker from "../../helper/userChecker";
 
 const router = Router();
 
@@ -7,6 +8,9 @@ const router = Router();
 
 router.post('/', studentController.createNew);
 
+router.post('/login', studentController.login);
+
+router.get('/current/me', centerChecker, studentController.getCurrentUser);
 // get all
 
 router.get('/', studentController.getAll);

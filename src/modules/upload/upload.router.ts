@@ -13,6 +13,8 @@ router.post('/profile', centerChecker, multerConfig.profile.single('image'), upl
 // create new
 router.post('/image', centerChecker, multerConfig.document.array('image'), uploadController.uploadMany);
 
+router.post('/video', multerConfig.video.single('video'), uploadController.uplaodVideo);
+
 // Upload Document
 router.post('/document', centerChecker, multerConfig.document.single('document'), uploadController.uploadDocuement);
 

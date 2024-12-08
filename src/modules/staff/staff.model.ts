@@ -8,6 +8,10 @@ const childSchema = new mongoose.Schema({
         ref: "Center",
         required: [true, "Canter id is required"],
     },
+    role: {
+        type: String,
+        default: "staff",
+    },
     firstName: {
         type: String,
         required: [true, "First Name is required"],

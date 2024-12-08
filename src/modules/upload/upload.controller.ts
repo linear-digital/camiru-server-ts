@@ -4,6 +4,8 @@ import path from "path"
 import sharp from "sharp"
 import Upload from "./upload.model"
 import { encrypt } from "../../util/security"
+import ffmpeg from "fluent-ffmpeg"
+
 const uploadProfile = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
         if (!req.file) {
@@ -41,7 +43,7 @@ const uploadDocuement = async (req: Request, res: Response, next: NextFunction):
         const file = req.file;
 
         const newFile = new Upload({
-            file: { ...file, path:  path.join("media/document/", file.filename) },
+            file: { ...file, path: path.join("media/document/", file.filename) },
             type: "profile"
         })
 
@@ -156,12 +158,44 @@ const deleteSingle = async (req: Request, res: Response, next: NextFunction): Pr
         next(error)
     }
 }
+const uplaodVideo = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+        const inputPath = req.file?.path as string;
+        const outputPath = `media/video/resized-${req.file?.originalname}`;
+        const resizedPath = path.resolve(outputPath);
+
+        // Create output directory if it doesn't exist
+        const outputDir = path.dirname(resizedPath);
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir, { recursive: true });
+        }
+
+        // Resize video using FFmpeg
+        ffmpeg(inputPath)
+            .size("720x480") // Set resolution (e.g., 720p)
+            .output(resizedPath)
+            .on("end", () => {
+                // Clean up the original uploaded file
+                fs.unlinkSync(inputPath);
+                res.status(200).json({ message: "Video resized successfully", resizedPath });
+            })
+            .on("error", (err) => {
+                console.error("Error resizing video:", err);
+                res.status(500).json({ error: "Failed to resize video" });
+            })
+            .run();
+
+    } catch (error: any) {
+        next(error)
+    }
+}
 const uploadController = {
     uploadProfile,
     getAllProfile,
     deleteAllProfile,
     deleteSingle,
     uploadDocuement,
-    uploadMany
+    uploadMany,
+    uplaodVideo
 }
 export default uploadController

@@ -39,7 +39,7 @@ const login = async (body: { email: string, password: string }) => {
         }
         const isMatch = body.password === data.password
         if (isMatch) {
-            const accessToken = await tokenGenerator.generateStudentToken(data, "30d")
+            const accessToken = await tokenGenerator.generateCenterToken(data, "30d", "student")
             return { message: "login success", accessToken }
         } else {
             throw new Error("Wrong password")

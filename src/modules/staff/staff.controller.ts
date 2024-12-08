@@ -12,6 +12,17 @@ const createNew = async (req: Request, res: Response, next: NextFunction) => {
         next(error)
     }
 }
+
+const login = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const body = decrypt(req.body)
+        const response = await studenService.login(body)
+        res.send(encrypt(response))
+    } catch (error) {
+        next(error)
+    }
+}
+
 // get all 
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -83,6 +94,17 @@ const deleteStudent = async (req: Request, res: Response, next: NextFunction) =>
         next(error)
     }
 }
+const getCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.center
+        if (!user) {
+            res.status(401).send({ message: 'Unauthorized' });
+        }
+        res.send(encrypt(user))
+    } catch (error) {
+        next(error)
+    }
+}
 const studentController = {
     createNew,
     getAll,
@@ -92,6 +114,8 @@ const studentController = {
     getStudentByClass,
     getSingle,
     upadteStudent,
-    deleteStudent
+    deleteStudent,
+    login,
+    getCurrentUser
 }
 export default studentController
